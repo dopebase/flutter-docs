@@ -150,7 +150,7 @@ You can restrict it for android platform using the below steps:
   </application>
 </manifest>
 ```
-
+Here, we need to replace the value in android:value with the API key that we generated in the above steps. Make sure you use your own API key.
   </TabItem>
   <TabItem value="ios" label="IOS">
 
@@ -179,15 +179,18 @@ import GoogleMaps
 
 </Tabs>
 
-Here, we need to replace the value in android:value with the API key that we generated in the above steps. Make sure you use your own API key.
+
 
 ### Installing Google Maps Flutter Plugin
 
 Now, we are going to use the package called google_maps_flutter. This plugin provides the GoogleMap widget to be used in our Flutter project to show the map on the screen.
-The widget houses many properties that allow us to tamper with the displayed map and customize it accordingly. Now, to install this plugin, we run command
+The widget houses many properties that allow us to tamper with the displayed map and customize it accordingly. Now, to install this plugin, add this to your project by heading to pubspec.yaml and running flutter pub get :
 
-```mdx
-flutter pub add google_maps_flutter
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  google_maps_flutter: 2.9.0
 ```
 
 ### Adding Maps to The Home Screen
