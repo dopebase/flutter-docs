@@ -136,13 +136,22 @@ Since we already provided you with the full source code for your Firebase Functi
 
 1. Navigate to the `firebase/functions` folder. Copy this function directory to the project we created above (mine was `my-firebase-project`) to OVERRIDE the functions folder that is in `my-firebase-project/functions`.
 
-2. Inside the functions directory, run:
+2. Navigate to `functions/media/upload.js` and change line
+
+```js
+      const storageBucket = 'development-69cdc.appspot.com'
+```
+to the storage bucket name of your firebase project where you can find it in Storage section. Replace it with what you see here:
+![](../../static/img/annotely_image_7.jpeg)
+
+
+3. Inside the functions directory, run:
 
    ```mdx
    npm install
    ```
 
-3. From the root directory (`my-firebase-project`) run command: <code>firebase use</code> and check if the firebase project is selected to where you want to push this functions is selected. If not run command <code>firebase use --add</code> to select your firebase project.
+4. From the root directory (`my-firebase-project`) run command: <code>firebase use</code> and check if the firebase project is selected to where you want to push this functions is selected. If not run command <code>firebase use --add</code> to select your firebase project.
 
 
    :::info Important
@@ -157,12 +166,12 @@ You can also refer to <a href="/docs/firebase-integration/link-firebase-account-
 
 
 
-4. Deploy the functions to your Firebase project:
+5. Deploy the functions to your Firebase project:
 
 ```mdx
 firebase deploy --only functions
 ```
-5. By following these steps and ensuring you select the correct Firebase project, you'll have the Instaflutter-provided Firebase Functions up and running in your own Firebase environment, properly linked to your Flutter app and ready to support your app's backend needs.
+6. By following these steps and ensuring you select the correct Firebase project, you'll have the Instaflutter-provided Firebase Functions up and running in your own Firebase environment, properly linked to your Flutter app and ready to support your app's backend needs.
 
 :::tip
 Remember, these functions are tailored to work with your specific Instaflutter product, so they're optimized for the features and functionality your app requires. However, feel free to explore and modify these functions as your app grows and your needs evolve.
