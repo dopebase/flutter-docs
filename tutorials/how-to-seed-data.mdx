@@ -1,0 +1,107 @@
+import Note from "@theme/Admonition";
+import Admonition from "@theme/Admonition";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# How To Seed data into firebase
+
+
+<Admonition type="note" title="Prerequisites"> 
+This guide walks you through the process of seeding data that is provided by our team into your Firebase Firestore using a Node.js script. Prerequisites for this guide is that you have already setup a firebase console project and that you have Node.js and npm installed on your machine before you start.
+ </Admonition> 
+
+## Set Up a New Directory 
+Create a directory for your script by navigating to where you want to create this project and run commands: 
+```bash 
+mkdir firestore-import 
+cd firestore-import
+```
+
+## Initialize a Node.js project:
+
+```bash
+npm init -y
+```
+This creates a package.json file.
+
+## Get Your Service Account from firebase
+
+Head to the firebase console and download it 
+
+![](../../static/img/annotely_image_8.jpeg)
+
+Rename this downloaded file to `serviceAccountKey.json` and put it in the root of the project we created above (`firestore-import`). 
+
+## Import seed folder and Install dependency 
+
+Next go ahead and import our seed folder. (usually name `dataSeed` having json files inside it). Next we will go ahead and add the npm package we need to seed our firebase.
+
+<Tabs>
+  <TabItem value="npm" label="npm" default>
+    ```bash
+npm install firestore-export-import
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+    ```bash
+yarn add firestore-export-import
+    ```
+  </TabItem>
+</Tabs>
+
+## Add final code that does the magic
+
+Your almost there! finally create a file `importData.js` inside the root project and put the below code inside it.
+
+```js
+const { initializeFirebaseApp, restore } = require('firestore-export-import');
+const serviceAccount = require('./serviceAccountKey.json');
+const path = require('path');
+
+// Replace with your Firestore database URL
+const databaseURL = 'https://your-database-name.firebaseio.com';
+
+// Path to your JSON file
+const jsonFilePath = path.resolve(__dirname, './dataSeed/vendors.json');
+
+// Initialize Firebase
+const firestore = initializeFirebaseApp(serviceAccount);
+
+// Import data
+restore(firestore, jsonFilePath)
+  .then((status) => {
+    console.log('Data imported successfully:', status);
+  })
+  .catch((error) => {
+    console.error('Error importing data:', error);
+  });
+```
+
+At this point you should have a project looking like:
+![](../../static/img/Screen-Shot-2024-12-02-at-10.03.31-AM.png)
+
+## Final Command
+
+Great, your done setting up the project! Final commands left to run would be:
+
+```bash
+node importData.js
+```
+You should see message <span style={{color: 'green'}}> Data imported successfully: \{ status: true, message: 'Collection successfully imported!\} </span> in terminal.
+
+<Admonition type="tip" title="Pro Tip">
+
+Go ahead and change the code line inside your `importData.js` file and change the json file name to the other files we have included inside the dataSeed folder: 
+
+```js
+const jsonFilePath = path.resolve(__dirname, './dataSeed/vendor_product.json'); // now to seed the other collection
+```
+and run command <code>node importData.js </code> for each file inside the `dataSeed` folder we have included.
+</Admonition>
+
+
+Great Job! You have sucessfully seeded your firebase with our seed data. Go ahead to your firestore to see the imported datas. You should find new data inserted:
+
+![](../../static/img/Screen-Shot-2024-12-02-at-10.02.56-AM.png)
+
+***Congratulations! You have successfully set up your project and seeded your Firebase Firestore with data provided by our team.***
