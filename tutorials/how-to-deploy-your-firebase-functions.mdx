@@ -68,8 +68,9 @@ firebase init
 You’ll be prompted to select the Firebase features you want to set up. Use the arrow keys to navigate and the spacebar to select the following options :
 
 - Functions: To set up Cloud Functions for Firebase.
+- Storage
 
-Follow the prompts to configure your project. You’ll be asked to select an existing Firebase project or create a new one.The CLI gives you these options for language support: **JavaScript**, **TypeScript**, and **Python**. Choose your preferred option and proceed. 
+Follow the prompts and default file names to configure your project. You’ll be asked to select an existing Firebase project or create a new one.The CLI gives you these options for language support: **JavaScript**, **TypeScript**, and **Python**. Choose your preferred option and proceed. 
 :::note
 If you plan to use the firebase functions provided provided by our team. You should choose **JavaScript**.
 :::
@@ -150,6 +151,7 @@ to the storage bucket name of your firebase project where you can find it in Sto
    ```mdx
    npm install
    ```
+4. Also override the contents of the files `firebase.indexes.json` with ours.   
 
 4. From the root directory (`my-firebase-project`) run command: <code>firebase use</code> and check if the firebase project is selected to where you want to push this functions is selected. If not run command <code>firebase use --add</code> to select your firebase project.
 
@@ -169,7 +171,7 @@ You can also refer to <a href="/docs/firebase-integration/link-firebase-account-
 5. Deploy the functions to your Firebase project:
 
 ```mdx
-firebase deploy --only functions
+firebase deploy
 ```
 6. By following these steps and ensuring you select the correct Firebase project, you'll have the Instaflutter-provided Firebase Functions up and running in your own Firebase environment, properly linked to your Flutter app and ready to support your app's backend needs.
 
