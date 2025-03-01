@@ -172,11 +172,32 @@ You can also refer to <a href="/docs/firebase-integration/link-firebase-account-
 
 ```mdx
 firebase deploy
+firebase deploy --only firestore:indexes
 ```
 6. By following these steps and ensuring you select the correct Firebase project, you'll have the Instaflutter-provided Firebase Functions up and running in your own Firebase environment, properly linked to your Flutter app and ready to support your app's backend needs.
 
 :::tip
 Remember, these functions are tailored to work with your specific Instaflutter product, so they're optimized for the features and functionality your app requires. However, feel free to explore and modify these functions as your app grows and your needs evolve.
+:::
+
+### Handling Quota Exceeded Errors
+
+When deploying multiple Firebase Functions simultaneously, you might encounter a quota exceeded error that looks like this:
+
+```mdx
+⚠  functions: got "Quota Exceeded" error while trying to create projects/[project-id]/locations/us-central1/functions/[function-name]
+```
+This occurs because Google Cloud Build has a limit on the number of API requests per minute. If you see errors like this during deployment, don't worry - Here's how to resolve it:
+
+**Solution**
+
+When some functions fail to deploy due to quota limits, you can deploy them separately using a specific command that targets just the failed functions:
+```mdx
+firebase deploy --only functions:listHashtagFeedPosts,functions:addMessageReaction,functions:addStory,functions:addStoryReaction,functions:updateGroup,functions:deletePost,functions:listNotifications,functions:listStories,functions:updateNotification,functions:propagateUserProfileUpdates
+```
+Replace the function names in the command above with the names of your failed functions. This approach deploys only the functions that failed in the initial deployment, helping you stay within the API quota limits.
+:::tip
+If you have many functions that failed to deploy, you can also try deploying them in smaller batches to avoid hitting the quota limit again.
 :::
 
 ## Conclusion
