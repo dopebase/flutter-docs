@@ -8,6 +8,9 @@ import TabItem from "@theme/TabItem";
 
 <Admonition type="note" title="Prerequisites"> 
 This guide walks you through the process of seeding data that is provided by our team into your Firebase Firestore using a Node.js script. Prerequisites for this guide is that you have already setup a firebase console project and that you have Node.js and npm installed on your machine before you start.
+:::tip
+ If you find a folder named `seed` inside your ***firebase_folder/functions*** you can go to [this section](#seeding-your-firebase-using-a-firebase-function) to learn how to seed the data.
+:::
  </Admonition> 
 
 ## Set Up a New Directory 
@@ -58,9 +61,6 @@ const { initializeFirebaseApp, restore } = require('firestore-export-import');
 const serviceAccount = require('./serviceAccountKey.json');
 const path = require('path');
 
-// Replace with your Firestore database URL
-const databaseURL = 'https://your-database-name.firebaseio.com';
-
 // Path to your JSON file
 const jsonFilePath = path.resolve(__dirname, './dataSeed/vendors.json');
 
@@ -105,3 +105,124 @@ Great Job! You have sucessfully seeded your firebase with our seed data. Go ahea
 ![](../../static/img/Screen-Shot-2024-12-02-at-10.02.56-AM.png)
 
 ***Congratulations! You have successfully set up your project and seeded your Firebase Firestore with data provided by our team.***
+
+
+## Seeding your Firebase using a Firebase Function
+
+If you navigate to your `firebase_directory/functions/seed/dbSeed.js` folder, you'll find a seed function that can be deployed to Firebase. Inside your `dbSeed.js` of the firebase, head to the bottom of the file and change the line to your project name as well:
+
+```js
+const deleteCollection = async collectionPath => {
+  await tools.firestore.delete(collectionPath, {
+    project: 'fir-project-e56c1', // your firebase project Id here
+    recursive: true,
+    yes: true,
+    force: true,
+  })
+}
+```
+Next, after deploying your Firebase functions following our deployment guide <a href="./how-to-deploy-your-firebase-functions">here</a>:. If you head to the Functions inside your firebase console, you'll see the function URL in your Firebase Console. 
+
+
+![](../../static/img/annotely_image_9.png)
+
+
+To use this seeding function, you'll need an authentication token. Here's how to obtain it:
+
+1. First, locate the file `authClient.js` in your project: `<your_instamobile_product>`/src/core/onboarding/api/firebase/authClient.js
+
+
+2. Modify the `loginWithEmailAndPassword` method by adding the token logging line:
+
+```js
+export const loginWithEmailAndPassword = async (email, password) => {
+return new Promise(function (resolve, reject) {
+ auth()
+   .signInWithEmailAndPassword(email, password)
+   .then(async response => {
+     const uid = response.user.uid
+
+     const tokenn = await response.user.getIdToken();
+     console.log("Your Auth Token is: ", tokenn) // Add this line to get your token
+     const userData = {
+       email,
+       id: uid,
+     }
+     usersRef
+       .doc(uid)
+       .get()
+       .then(function (firestoreDocument) {
+         if (!firestoreDocument.exists) {
+           // User does not exist anymore in users collection, but it exists in Auth, so we create a new one
+           usersRef.doc(uid).set(userData, { merge: true })
+           resolve({
+             user: { ...userData },
+             warning:
+               "Your account has been previously removed automatically, so now it's incomplete.",
+             errorCode: ErrorCode.noUser,
+           })
+           return
+         }
+         const user = firestoreDocument.data()
+         const newUserData = {
+           ...userData,
+           ...user,
+         }
+         resolve({ user: newUserData })
+       })
+       .catch(function (_error) {
+         console.log('_error:', _error)
+         resolve({ error: ErrorCode.serverError })
+       })
+   })
+   .catch(error => {
+     console.log('error:', error)
+     var errorCode = ErrorCode.serverError
+     switch (error.code) {
+       case 'auth/wrong-password':
+         errorCode = ErrorCode.invalidPassword
+         break
+       case 'auth/network-request-failed':
+         errorCode = ErrorCode.serverError
+         break
+       case 'auth/user-not-found':
+         errorCode = ErrorCode.noUser
+         break
+       default:
+         errorCode = ErrorCode.serverError
+     }
+     resolve({ error: errorCode })
+   })
+})
+}
+```
+
+After logging in as a user, you should see your authentication token in the console: <span style={{color: 'green'}}>Your Auth Token is: [your-token]</span>
+
+### Making the Seed Request
+
+With your authentication token and function URL, you can now make the seeding request using any API client like (Postman, Insomnia, or VS Code's Thunder Client):
+
+- Set the request method to POST
+- Use your Firebase Function URL - You copied above
+- Add the following JSON in the request body:
+```json
+{
+  "data": {}
+}
+```
+- Add Authorization Header (your token that was logged in the console above)
+
+Here's how your request should look:
+
+
+<div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+  <div style={{ flex: 1 }}>
+    ![](@site/static/img/page_1.png)
+  </div>
+  <div style={{ flex: 1 }}>
+    ![](@site/static/img/page_2.png)
+  </div>
+</div>
+
+Great! now you should see your users populated in your firestore database.
